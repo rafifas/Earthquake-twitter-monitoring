@@ -2,7 +2,7 @@
 to pull in tweets and publish them to a PubSub topic.
 """
 import base64
-from tweepy 
+import tweepy 
 from google.cloud import pubsub
 
 PROJECT_ID = os.getenv('GCP_PROJECT')
@@ -21,7 +21,6 @@ class MyStreamListener(tweepy.StreamListener):
     """A listener handles tweets that are received from the stream.
     This listener dumps the tweets into a PubSub topic
     """
-    count = 0
     tweets = []
     batch_size = 10
 
@@ -38,7 +37,6 @@ class MyStreamListener(tweepy.StreamListener):
             # print(self.tweets)
             self.write_to_pubsub(self.tweets)
             self.tweets = []
-        self.count += 1
 
     def on_error(self, status):
         print (status)

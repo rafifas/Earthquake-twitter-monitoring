@@ -11,39 +11,36 @@ from google.cloud import pubsub
 
 PUBSUB_TOPIC_NAME = 'projects/stable-healer-287102/topics/tweets'
 
+def encode(data_lines):
+    messages = []
+    for line in data_lines:
+        pub = base64.b64encode(bytes(line, 'utf-8'))
+        messages.append({'data': pub})
+    body = {'messages': messages}
+    return body
 
 class StdOutListener(StreamListener):
     """A listener handles tweets that are received from the stream.
     This listener dumps the tweets into a PubSub topic
     """
     count = 0
-    twstring = ''
     tweets = []
-    batch_size = 50
+    batch_size = 10
     total_tweets = 10000000
     client = pubsub.PublisherClient()
 	
-    def encode(data_lines):
-        messages = []
-        for line in data_lines:
-            pub = base64.urlsafe_b64encode(line)
-            messages.append({'data': pub})
-        body = {'messages': messages}
-        return body
-
     def on_data(self, data):
         """What to do when tweet data is received."""
         self.tweets.append(data)
         if len(self.tweets) >= self.batch_size:
-        #    self.write_to_pubsub(self.tweets)
-           messages = self.encode(self.tweets)
-           self.client.publish(PUBSUB_TOPIC_NAME, messages)
-           self.tweets = []
+          messages = encode(self.tweets)
+          self.client.publish(PUBSUB_TOPIC_NAME, messages)
+          self.tweets = []
         self.count += 1
         # if we've grabbed more than total_tweets tweets, exit the script.
         if self.count > self.total_tweets:
            return False
-        if (self.count % 1000) == 0:
+        if (self.count % 10) == 0:
            print (f'count is: {self.count} at {datetime.datetime.now()}')
         return True
 

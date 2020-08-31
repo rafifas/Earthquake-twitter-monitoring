@@ -23,7 +23,7 @@ class StdOutListener(StreamListener):
     total_tweets = 10000000
     client = pubsub.PublisherClient()
 	
-def encode(data_lines):
+	def encode(data_lines):
 		messages = []
 		for line in data_lines:
 			pub = base64.urlsafe_b64encode(line)

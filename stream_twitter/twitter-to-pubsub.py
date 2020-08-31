@@ -24,12 +24,12 @@ class StdOutListener(StreamListener):
     client = pubsub.PublisherClient()
 	
     def encode(data_lines):
-		messages = []
-		for line in data_lines:
-			pub = base64.urlsafe_b64encode(line)
-			messages.append({'data': pub})
-		body = {'messages': messages}
-		return body
+        messages = []
+        for line in data_lines:
+            pub = base64.urlsafe_b64encode(line)
+            messages.append({'data': pub})
+        body = {'messages': messages}
+        return body
 
     def on_data(self, data):
         """What to do when tweet data is received."""

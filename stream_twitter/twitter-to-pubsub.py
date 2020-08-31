@@ -3,21 +3,14 @@ to pull in tweets and publish them to a PubSub topic.
 """
 import base64
 import datetime
-import utils
 from tweepy import OAuthHandler
 from tweepy import Stream
 from tweepy.streaming import StreamListener
 
-def publish(client, pubsub_topic, data_lines):
-    """Publish to the given pubsub topic."""
-    messages = []
-    for line in data_lines:
-        pub = base64.urlsafe_b64encode(line)
-        messages.append({'data': pub})
-    body = {'messages': messages}
-    resp = client.projects().topics().publish(
-        topic=pubsub_topic, body=body).execute(num_retries=3)
-    return resp
+
+PROJECT_NAME = os.getenv('GCP_PROJECT')
+PUBSUB_TOPIC_NAME = 'projects/%s/topics/%s' % (PROJECT_NAME, 'twitter_subs')
+
 
 class StdOutListener(StreamListener):
     """A listener handles tweets that are received from the stream.
@@ -26,19 +19,26 @@ class StdOutListener(StreamListener):
     count = 0
     twstring = ''
     tweets = []
-    batch_size = 10
+    batch_size = 50
     total_tweets = 10000000
-    client = utils.create_pubsub_client(utils.get_credentials())
+    client = pubsub.PublisherClient()
 
-    def write_to_pubsub(self, tw):
-        publish(self.client, 'projects/stable-healer-287102/topics/tweets', tw)
+	def encode(data_lines):
+		messages = []
+		for line in data_lines:
+			pub = base64.urlsafe_b64encode(line)
+			messages.append({'data': pub})
+		body = {'messages': messages}
+		return body
 
     def on_data(self, data):
         """What to do when tweet data is received."""
         self.tweets.append(data)
         if len(self.tweets) >= self.batch_size:
-            self.write_to_pubsub(self.tweets)
-            self.tweets = []
+        #    self.write_to_pubsub(self.tweets)
+			messages = self.encode(self.tweets)
+			self.client.publish(PUBSUB_TOPIC_NAME, messages)
+			self.tweets = []
         self.count += 1
         # if we've grabbed more than total_tweets tweets, exit the script.
         if self.count > self.total_tweets:

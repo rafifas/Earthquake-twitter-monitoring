@@ -9,7 +9,7 @@ from tweepy.streaming import StreamListener
 
 
 PROJECT_NAME = os.getenv('GCP_PROJECT')
-PUBSUB_TOPIC_NAME = 'projects/%s/topics/%s' % (PROJECT_NAME, 'twitter_subs')
+PUBSUB_TOPIC_NAME = 'projects/%s/topics/%s' % (PROJECT_NAME, 'tweets')
 
 
 class StdOutListener(StreamListener):

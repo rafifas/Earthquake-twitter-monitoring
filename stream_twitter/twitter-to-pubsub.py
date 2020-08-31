@@ -6,6 +6,7 @@ import datetime
 from tweepy import OAuthHandler
 from tweepy import Stream
 from tweepy.streaming import StreamListener
+from google.cloud import pubsub
 
 
 PUBSUB_TOPIC_NAME = 'projects/stable-healer-287102/topics/tweets'

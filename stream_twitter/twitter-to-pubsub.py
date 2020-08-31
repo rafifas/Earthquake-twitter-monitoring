@@ -36,15 +36,15 @@ class StdOutListener(StreamListener):
         self.tweets.append(data)
         if len(self.tweets) >= self.batch_size:
         #    self.write_to_pubsub(self.tweets)
-			messages = self.encode(self.tweets)
-			self.client.publish(PUBSUB_TOPIC_NAME, messages)
-			self.tweets = []
+           messages = self.encode(self.tweets)
+           self.client.publish(PUBSUB_TOPIC_NAME, messages)
+           self.tweets = []
         self.count += 1
         # if we've grabbed more than total_tweets tweets, exit the script.
         if self.count > self.total_tweets:
-            return False
+           return False
         if (self.count % 1000) == 0:
-            print 'count is: %s at %s' % (self.count, datetime.datetime.now())
+           print 'count is: %s at %s' % (self.count, datetime.datetime.now())
         return True
 
     def on_error(self, status):

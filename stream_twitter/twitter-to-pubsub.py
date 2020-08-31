@@ -3,6 +3,7 @@ to pull in tweets and publish them to a PubSub topic.
 """
 import base64
 import datetime
+import json
 from tweepy import OAuthHandler
 from tweepy import Stream
 from tweepy.streaming import StreamListener
@@ -14,10 +15,11 @@ PUBSUB_TOPIC_NAME = 'projects/stable-healer-287102/topics/tweets'
 def encode(data_lines):
     messages = []
     for line in data_lines:
-        pub = base64.b64encode(bytes(line, 'utf-8'))
-        messages.append({'data': pub})
+        messages.append({'data': line})
     body = {'messages': messages}
-    return body
+    str_body = json.dumps(body)
+    data = base64.urlsafe_b64encode(bytearray(str_body, 'utf8'))
+    return data
 
 class StdOutListener(StreamListener):
     """A listener handles tweets that are received from the stream.

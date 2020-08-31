@@ -22,7 +22,7 @@ class StdOutListener(StreamListener):
     batch_size = 50
     total_tweets = 10000000
     client = pubsub.PublisherClient()
-
+	
 	def encode(data_lines):
 		messages = []
 		for line in data_lines:
